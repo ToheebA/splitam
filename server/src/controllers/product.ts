@@ -1,6 +1,6 @@
 import { AuthRequest } from "../types/index";
-import { Response } from "express";
-import { BadRequestError, UnauthenticatedError } from "../errors/index";
+import { Request, Response } from "express";
+import { BadRequestError, UnauthenticatedError, NotFoundError } from "../errors/index";
 import Product from "../models/Product";
 import { StatusCodes } from "http-status-codes";
 
@@ -23,4 +23,20 @@ const createProduct = async (req: AuthRequest, res: Response) => {
         unit 
     });
     res.status(StatusCodes.CREATED).json({ product });
+}
+
+const getAllProducts = async (req: Request, res: Response) => {
+    const products = await Product.find({ available: true })
+        .populate("vendor", "name location")
+    res.status(StatusCodes.OK).json({ products })
+}
+
+const getProduct = async (req: Request, res: Response) => {
+    const { id: productId } = req.params
+    const product = await Product.findById(productId)
+        .populate("vendor", "name location")
+    if (!product) {
+        throw new NotFoundError('Product not found');
+    }
+    res.status(StatusCodes.OK).json({ product })
 }
