@@ -1,6 +1,6 @@
 import { AuthRequest } from "../types/index";
 import { Request, Response } from "express";
-import { BadRequestError, UnauthenticatedError, NotFoundError } from "../errors/index";
+import { BadRequestError, UnauthenticatedError, NotFoundError, ForbiddenError } from "../errors/index";
 import Product from "../models/Product";
 import { StatusCodes } from "http-status-codes";
 
@@ -38,5 +38,29 @@ const getProduct = async (req: Request, res: Response) => {
     if (!product) {
         throw new NotFoundError('Product not found');
     }
+    res.status(StatusCodes.OK).json({ product })
+}
+
+const updateProduct = async (req: AuthRequest, res: Response) => {
+    const { id: productId } = req.params
+    const product = await Product.findById(productId)
+    if (!req.user) {
+        throw new UnauthenticatedError('Authentication required');
+    }
+    if (!product) {
+        throw new NotFoundError('Product not found');
+    }
+    if (product.vendor.toString() !== req.user.userId) {
+        throw new ForbiddenError('Not authorized to update this product');
+    }
+    const { name, description, category, unitPrice, minQuantity, unit, available } = req.body;
+    if (name !== undefined) product.name = name;
+    if (description !== undefined) product.description = description;
+    if (category !== undefined) product.category = category;
+    if (unitPrice !== undefined) product.unitPrice = unitPrice;
+    if (minQuantity !== undefined) product.minQuantity = minQuantity;
+    if (unit !== undefined) product.unit = unit;
+    if (available !== undefined) product.available = available;
+    await product.save();
     res.status(StatusCodes.OK).json({ product })
 }
