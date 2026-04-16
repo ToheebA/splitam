@@ -43,10 +43,10 @@ const getProduct = async (req: Request, res: Response) => {
 
 const updateProduct = async (req: AuthRequest, res: Response) => {
     const { id: productId } = req.params
-    const product = await Product.findById(productId)
     if (!req.user) {
         throw new UnauthenticatedError('Authentication required');
     }
+    const product = await Product.findById(productId)
     if (!product) {
         throw new NotFoundError('Product not found');
     }
@@ -63,4 +63,28 @@ const updateProduct = async (req: AuthRequest, res: Response) => {
     if (available !== undefined) product.available = available;
     await product.save();
     res.status(StatusCodes.OK).json({ product })
+}
+
+const deleteProduct = async (req: AuthRequest, res: Response) => {
+    const { id: productId } = req.params
+    if (!req.user) {
+        throw new UnauthenticatedError('Authentication required');
+    }
+    const product = await Product.findById(productId)
+    if (!product) {
+        throw new NotFoundError('Product not found');
+    }
+    if (product.vendor.toString() !== req.user.userId) {
+        throw new ForbiddenError('Not authorized to delete this product');
+    }
+    await Product.findByIdAndDelete(productId);
+    res.status(StatusCodes.OK).json({ message: 'Product deleted successfully' });
+}
+
+export { 
+    createProduct, 
+    getAllProducts, 
+    getProduct, 
+    updateProduct, 
+    deleteProduct 
 }
