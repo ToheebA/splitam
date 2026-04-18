@@ -8,6 +8,7 @@ import { setupSocket } from './config/socket';
 import errorHandler from './middleware/errorHandler';
 import authRouter from './routes/auth';
 import productRouter from './routes/product';
+import groupRouter from './routes/group';
 
 const app = express();
 const server = createServer(app);
@@ -22,6 +23,7 @@ app.use(express.json());
 
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/products', productRouter);
+app.use('/api/v1/groups', groupRouter);
 app.get('/', (_req, res) => {
     res.json({ msg: 'SplitAm API' })
 })
