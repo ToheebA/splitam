@@ -4,6 +4,7 @@ import { BadRequestError, UnauthenticatedError } from '../errors';
 import Product from '../models/Product';
 import Group from '../models/Group';
 import { StatusCodes } from 'http-status-codes';
+import mongoose from 'mongoose';
 
 const createGroup = async (req: AuthRequest, res: Response) => {
     if (!req.user) {
@@ -67,7 +68,7 @@ const joinGroup = async (req: AuthRequest, res: Response) => {
         throw new BadRequestError('Group is not open');
     }
     if (new Date(group.deadline) <= new Date()) {
-        throw new BadRequestError('Group has closed');
+        throw new BadRequestError('Group is no longer available');
     }
     const isMember = group.members.some(
         (member) => member.user.toString() === req.user!.userId
@@ -81,7 +82,7 @@ const joinGroup = async (req: AuthRequest, res: Response) => {
             _id: groupId,
             status: 'open',
             deadline: { $gt: new Date() },
-            'members.user': { $ne: req.user.userId },
+            'members.user': { $ne: new mongoose.Types.ObjectId(req.user.userId) },
             $expr: { $lte: [{ $add: ['$currentQuantity', quantity] }, '$targetQuantity'] }
         },
         {
@@ -102,6 +103,12 @@ const joinGroup = async (req: AuthRequest, res: Response) => {
         const freshGroup = await Group.findById(groupId);
         if (!freshGroup) {
             throw new BadRequestError('Group no longer exists');
+        }
+        const alreadyMember = freshGroup.members.some(
+            m => m.user.toString() === req.user!.userId
+        );
+        if (alreadyMember) {
+            throw new BadRequestError('You are already a member of this group');
         }
         if (freshGroup.status !== 'open' || new Date(freshGroup.deadline) <= new Date()) {
             throw new BadRequestError('Group is no longer available');
