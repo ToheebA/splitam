@@ -48,6 +48,67 @@ const createGroup = async (req: AuthRequest, res: Response) => {
     res.status(StatusCodes.CREATED).json(group);
 }
 
+const getAllGroups = async (req: Request, res: Response) => {
+    const {
+        status,
+        location,
+        minTarget,
+        maxTarget,
+        sort = '-createdAt',
+        page = 1,
+        limit = 20,
+        includeExpired = 'false'
+    } = req.query;
+
+    const filter: any = {};
+
+    if (status) {
+        filter.status = status;
+    }
+
+    if (location) {
+        filter.location = new RegExp(location as string, 'i');
+    }
+
+    if (minTarget || maxTarget) {
+        filter.targetQuantity = {};
+        if (minTarget) {
+            filter.targetQuantity.$gte = Number(minTarget);
+        }
+        if (maxTarget) {
+            filter.targetQuantity.$lte = Number(maxTarget);
+        }
+    }
+
+    if (includeExpired !== 'true') {
+        filter.deadline = { $gt: new Date() };
+    }
+
+    const pageNum = Math.max(1, Number(page));
+    const limitNum = Math.min(100, Math.max(1, Number(limit)));
+    const skip = (pageNum - 1) * limitNum;
+
+    const [groups, total] = await Promise.all([
+        Group.find(filter)
+            .populate('product', 'name unitPrice image')
+            .populate('creator', 'name email')
+            .sort(sort as string)
+            .skip(skip)
+            .limit(limitNum)
+            .lean(),
+        Group.countDocuments(filter)
+    ])
+
+    res.status(StatusCodes.OK).json({
+        success: true,
+        count: groups.length,
+        total,
+        totalPages: Math.ceil(total / limitNum),
+        currentPage: pageNum,
+        groups
+    });
+};
+
 const joinGroup = async (req: AuthRequest, res: Response) => {
     if (!req.user) {
         throw new UnauthenticatedError('Authentication required');
@@ -126,5 +187,6 @@ const joinGroup = async (req: AuthRequest, res: Response) => {
 
 export {
     createGroup,
+    getAllGroups,
     joinGroup
 }
