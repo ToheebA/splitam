@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { AuthRequest } from '../types/index';
-import { BadRequestError, UnauthenticatedError } from '../errors';
+import { AuthRequest, GroupFilter, GroupStatus } from '../types/index';
+import { BadRequestError, UnauthenticatedError, NotFoundError, ForbiddenError } from '../errors';
 import Product from '../models/Product';
 import Group from '../models/Group';
 import { StatusCodes } from 'http-status-codes';
@@ -45,7 +45,7 @@ const createGroup = async (req: AuthRequest, res: Response) => {
         }]
     })
 
-    res.status(StatusCodes.CREATED).json(group);
+    res.status(StatusCodes.CREATED).json({ group });
 }
 
 const getAllGroups = async (req: Request, res: Response) => {
@@ -60,10 +60,10 @@ const getAllGroups = async (req: Request, res: Response) => {
         includeExpired = 'false'
     } = req.query;
 
-    const filter: any = {};
+    const filter: GroupFilter = {};
 
     if (status) {
-        filter.status = status;
+        filter.status = status as GroupStatus;
     }
 
     if (location) {
@@ -106,8 +106,22 @@ const getAllGroups = async (req: Request, res: Response) => {
         totalPages: Math.ceil(total / limitNum),
         currentPage: pageNum,
         groups
-    });
-};
+    })
+}
+
+const getGroup = async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    const group = await Group.findById(id)
+        .populate('product')
+        .populate('creator')
+        .populate('members.user')
+
+    if (!group) {
+        throw new NotFoundError('Group not found');
+    }
+    res.status(StatusCodes.OK).json({ group })
+}
 
 const joinGroup = async (req: AuthRequest, res: Response) => {
     if (!req.user) {
@@ -115,6 +129,9 @@ const joinGroup = async (req: AuthRequest, res: Response) => {
     }
 
     const { quantity } = req.body;
+    if (!quantity) {
+        throw new BadRequestError('Quantity is required');
+    }
     if (!Number.isInteger(quantity) || quantity <= 0) {
         throw new BadRequestError('Quantity must be a positive integer');
     }
@@ -122,8 +139,9 @@ const joinGroup = async (req: AuthRequest, res: Response) => {
     const { id: groupId } = req.params;
 
     const group = await Group.findById(groupId);
+
     if (!group) {
-        throw new BadRequestError('Group does not exist');
+        throw new NotFoundError('Group does not exist');
     }
     if (group.status !== 'open') {
         throw new BadRequestError('Group is not open');
@@ -153,11 +171,9 @@ const joinGroup = async (req: AuthRequest, res: Response) => {
         { new: true, runValidators: true }
     );
 
-    if (updatedGroup) {
-        if (updatedGroup.currentQuantity === updatedGroup.targetQuantity) {
-            updatedGroup.status = 'filled';
-            await updatedGroup.save();
-        }
+    if (updatedGroup && updatedGroup.currentQuantity === updatedGroup.targetQuantity) {
+        updatedGroup.status = 'filled';
+        await updatedGroup.save();
     }
 
     if (!updatedGroup) {
@@ -182,11 +198,49 @@ const joinGroup = async (req: AuthRequest, res: Response) => {
         throw new BadRequestError('Unable to join group. Please try again.');
     }
 
-    res.status(StatusCodes.OK).json(updatedGroup);
+    res.status(StatusCodes.OK).json( {updatedGroup} );
 };
+
+const updateGroup = async (req: AuthRequest, res: Response) => {
+    const { id } = req.params;
+    
+    if (!req.user) {
+        throw new UnauthenticatedError('Authentication required');
+    }
+
+    const group = await Group.findById(id);
+    if (!group) {
+        throw new NotFoundError('Group not found');
+    }
+
+    if (group.creator.toString() !== req.user.userId && req.user.role !== 'admin') {
+        throw new ForbiddenError('Not authorized')
+    }
+    
+    const { productId, targetQuantity, deadline, location, quantity, status } = req.body;
+
+    if (group.members.length === 1) {
+        if (productId !== undefined) group.product = productId;
+    }
+    
+    if (targetQuantity !== undefined) group.targetQuantity = targetQuantity;
+    if (deadline !== undefined) {
+        if (new Date(deadline) <= new Date()) {
+            throw new BadRequestError('Deadline must be a future date')
+        }
+        group.deadline = deadline
+    }
+    if (location !== undefined) group.location = location;
+    if (status !== undefined) group.status = status;
+
+    await group.save();
+    res.status(StatusCodes.OK).json({ group })
+}
 
 export {
     createGroup,
     getAllGroups,
-    joinGroup
+    getGroup,
+    joinGroup,
+    updateGroup
 }
