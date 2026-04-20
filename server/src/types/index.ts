@@ -14,6 +14,13 @@ export interface AuthRequest extends Request {
     user?: AuthPayload
 }
 
+export interface GroupFilter {
+    status?: GroupStatus
+    location?: RegExp
+    deadline?: { $gt: Date }
+    targetQuantity?: { $gte?: number, $lte?: number }
+}
+
 export interface IUser {
     _id: Types.ObjectId,
     name: string,
