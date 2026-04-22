@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import { BadRequestError, UnauthenticatedError, NotFoundError, ForbiddenError } from "../errors/index";
 import Product from "../models/Product";
 import { StatusCodes } from "http-status-codes";
+import mongoose from "mongoose";
 
 const createProduct = async (req: AuthRequest, res: Response) => {
     const { name, description, category, unitPrice, minQuantity, unit } = req.body;
@@ -14,7 +15,7 @@ const createProduct = async (req: AuthRequest, res: Response) => {
     }
 
     const product = await Product.create({ 
-        vendor: req.user.userId, 
+        vendor: new mongoose.Types.ObjectId(req.user.userId), 
         name, 
         description, 
         category, 
