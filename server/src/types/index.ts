@@ -40,7 +40,7 @@ export interface IUser {
 
 export interface IProduct {
     _id: Types.ObjectId,
-    vendor: Types.ObjectId,
+    vendor: Types.ObjectId | IUser,
     name: string,
     description: string,
     category: string,
