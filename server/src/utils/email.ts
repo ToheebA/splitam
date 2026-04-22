@@ -32,4 +32,29 @@ const sendVerificationEmail = async (email: string, token: string) => {
     }
 }
 
-export { sendVerificationEmail }
+const sendGroupPurchasedEmail = async (email: string, groupName: string) => {
+    const response = await resend.emails.send({
+        from: 'SplitAm <onboarding@resend.dev>',
+        to: process.env.NODE_ENV as string === 'production'
+            ? email
+            : 'olufade.toheeb@gmail.com',
+        subject: 'Group Purchased',
+        html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h1 style="color: #16a34a;">Group Purchased!</h1>
+                <p>Congratulations! Your group for "<strong>${groupName}</strong>" bulk purchase is complete.</p>
+                <p>Thank you for using SplitAm!</p>
+            </div>
+        `
+    })
+
+    if (response.error) {
+        console.log('Email error:', response.error)
+        throw new Error('Failed to send group purchased email')
+    }
+}
+
+export { 
+    sendVerificationEmail,
+    sendGroupPurchasedEmail
+}
