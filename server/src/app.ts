@@ -9,6 +9,7 @@ import errorHandler from './middleware/errorHandler';
 import authRouter from './routes/auth';
 import productRouter from './routes/product';
 import groupRouter from './routes/group';
+import paymentRouter from './routes/payment';
 
 const app = express();
 const server = createServer(app);
@@ -19,11 +20,15 @@ app.use(cors({
         // Add other allowed origins here
     ]
 }));
+app.use('/api/v1/payments/webhook', 
+    express.raw({ type: 'application/json' 
+    }))
 app.use(express.json());
 
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/products', productRouter);
 app.use('/api/v1/groups', groupRouter);
+app.use('/api/v1/payments', paymentRouter);
 app.get('/', (_req, res) => {
     res.json({ msg: 'SplitAm API' })
 })

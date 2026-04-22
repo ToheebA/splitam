@@ -1,10 +1,13 @@
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { AuthRequest, IUser } from '../types';
 import { UnauthenticatedError, NotFoundError, BadRequestError } from '../errors';
 import Group from '../models/Group';
+import Product from '../models/Product';
 import axios from 'axios';
 import { StatusCodes } from 'http-status-codes';
 import crypto from 'crypto';
+import { getIO } from '../config/socket';
+import { sendGroupPurchasedEmail } from '../utils/email';
 
 
 const initializePayment = async (req: AuthRequest, res: Response) => {
@@ -66,4 +69,59 @@ const initializePayment = async (req: AuthRequest, res: Response) => {
     })
 }
 
-export { initializePayment }
+const paystackWebhook = async (req: Request, res: Response) => {
+    const hash = crypto
+        .createHmac('sha512', process.env.PAYSTACK_SECRET_KEY as string)
+        .update(req.body)
+        .digest('hex');
+
+    if (hash !== req.headers['x-paystack-signature']) {
+        return res.status(StatusCodes.BAD_REQUEST).json({ msg: 'Invalid signature' })
+    }
+
+    const event = JSON.parse(req.body.toString())
+
+    if (event.event !== 'charge.success') {
+        return res.status(StatusCodes.OK).send();
+    }
+
+    const { groupId, userId } = event.data.metadata;
+
+    const group = await Group.findById(groupId);
+
+    if (!group) {
+        return res.status(StatusCodes.OK).send()
+    }
+
+    const updatedGroup = await Group.findOneAndUpdate(
+        { _id: groupId, 'members.user': userId },
+        { $set: { 'members.$.paid': true } },
+        { new: true }
+    )
+    if (!updatedGroup) {
+        return res.status(StatusCodes.OK).send()
+    }
+
+    const allPaid = updatedGroup.members.every(m => m.paid);
+    if (allPaid) {
+        updatedGroup.status = 'purchased';
+        await updatedGroup.save();
+        const productId = updatedGroup.product.toString();
+        const product = await Product.findById(productId).populate('vendor', 'email name')
+        if (!product) {
+            throw new NotFoundError('Product not found');
+        }
+        const vendor = product.vendor as unknown as IUser
+        const vendorId = vendor._id.toString()
+        const vendorEmail = vendor.email
+        getIO().to(vendorId).emit('groupPurchased', { groupId: updatedGroup._id.toString() });
+        await sendGroupPurchasedEmail(vendorEmail, product.name);
+    }
+
+    res.status(StatusCodes.OK).send()
+}
+
+export { 
+    initializePayment, 
+    paystackWebhook 
+};
