@@ -7,6 +7,20 @@ export interface AuthResponse {
     token: string
 }
 
+export interface DecodedToken {
+    userId: string,
+    role: Role,
+    name: string,
+    exp: number
+}
+
+export interface AuthContextType {
+    user: User | null,
+    token: string | null,
+    login: (token: string, user: User) => void,
+    logout: () => void
+}
+
 export interface RegisterData {
     name: string,
     email: string,
