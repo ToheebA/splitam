@@ -55,9 +55,7 @@ const Register = () => {
             setError('Passwords do not match')
             return
         }
-    
         mutate(formData)
-        
     }
 
     return (
