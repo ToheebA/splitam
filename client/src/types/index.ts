@@ -37,7 +37,7 @@ export interface LoginData {
 }
 
 export interface User {
-   _id: string,
+    userId: string,
     name: string,
     email: string,
     role: Role,
