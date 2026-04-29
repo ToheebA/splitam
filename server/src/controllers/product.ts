@@ -27,8 +27,17 @@ const createProduct = async (req: AuthRequest, res: Response) => {
 }
 
 const getAllProducts = async (req: Request, res: Response) => {
-    const products = await Product.find({ available: true })
+    const { vendor } = req.query
+
+    const filter: Record<string, unknown> = { available: true }
+
+    if (vendor) {
+        filter.vendor = vendor
+    }
+
+    const products = await Product.find(filter)
         .populate("vendor", "name location")
+    
     res.status(StatusCodes.OK).json({ products })
 }
 
