@@ -15,7 +15,7 @@ const VerifyEmail = () => {
                 setStatus('failed')
             }
         }
-        if {token} verify()
+        if (token) verify()
         else setStatus('failed')
     }, [token])
 
