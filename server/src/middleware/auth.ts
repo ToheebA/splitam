@@ -17,6 +17,18 @@ const auth = (req: AuthRequest, res: Response, next: NextFunction) => {
         throw new UnauthenticatedError('Authentication invalid')
     }
 }
+const optionalAuth = (req: AuthRequest, _res: Response, next: NextFunction) => {
+    const authHeader = req.headers.authorization
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return next()
+    }
+    const token = authHeader.split(' ')[1]
+    try {
+        const payload = jwt.verify(token, process.env.JWT_SECRET as string) as AuthPayload
+        req.user = payload
+    } catch {}
+    next()
+}
 
 const authorize = (...roles: Role[]) => {
     return (req: AuthRequest, _res: Response, next: NextFunction) => {
@@ -28,4 +40,4 @@ const authorize = (...roles: Role[]) => {
     }
 }
 
-export { auth, authorize }
+export { auth, optionalAuth, authorize }

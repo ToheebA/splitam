@@ -19,6 +19,7 @@ export interface GroupFilter {
     location?: RegExp
     deadline?: { $gt: Date }
     targetQuantity?: { $gte?: number, $lte?: number }
+    'members.user'?:string
 }
 
 export interface IUser {

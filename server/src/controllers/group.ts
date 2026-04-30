@@ -48,8 +48,9 @@ const createGroup = async (req: AuthRequest, res: Response) => {
     res.status(StatusCodes.CREATED).json({ group });
 }
 
-const getAllGroups = async (req: Request, res: Response) => {
+const getAllGroups = async (req: AuthRequest, res: Response) => {    
     const {
+        myGroups,
         status,
         location,
         minTarget,
@@ -61,6 +62,11 @@ const getAllGroups = async (req: Request, res: Response) => {
     } = req.query;
 
     const filter: GroupFilter = {};
+
+    if (myGroups === 'true') {
+        if (!req.user) throw new UnauthenticatedError('Authentication required')
+        filter['members.user'] = req.user.userId
+    }
 
     if (status) {
         filter.status = status as GroupStatus;
