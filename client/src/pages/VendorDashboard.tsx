@@ -12,19 +12,13 @@ const VendorDashboard = () => {
     const queryClient = useQueryClient()
     const [editingProduct, setEditingProduct] = useState<Product | null>(null)
     const [showCreateForm, setShowCreateForm] = useState(false)
+
     const { data, isLoading, isError } = useQuery({
         queryKey: ['products', user?.userId],
         queryFn: () => getProducts({ vendor: user?.userId as string }),
         enabled: !!user?.userId
     })
-    const { mutate: deleteProductMutation } = useMutation({
-        mutationFn: (id: string) => deleteProduct(id),
-        onSuccess: () => {
-            toast.success('Product deleted')
-            queryClient.invalidateQueries({ queryKey: ['products', user?.userId] })
-        },
-        onError: (error: any) => toast.error(error.response?.data?.msg || 'Delete failed')
-    })
+
     const initialFormState = {
         name: '',
         description: '',
@@ -37,6 +31,7 @@ const VendorDashboard = () => {
     }
 
     const [productForm, setProductForm] = useState<modifiedProduct>(initialFormState)
+
     const { mutate: createProductMutation } = useMutation({
         mutationFn: (data: modifiedProduct & { vendor: string }) => createProduct(data),
         onSuccess: () => {
@@ -49,6 +44,7 @@ const VendorDashboard = () => {
             toast.error(error.response?.data?.msg || 'Failed to create product')
         }
     })
+
     const { mutate: updateProductMutation } = useMutation({
         mutationFn: ({ id, data }: { id: string, data: Partial<modifiedProduct> }) => updateProduct(id, data),
         onSuccess: () => {
@@ -59,6 +55,16 @@ const VendorDashboard = () => {
         onError: (error: any) =>
             toast.error(error.response?.data?.msg || 'Update failed')
     })
+
+    const { mutate: deleteProductMutation } = useMutation({
+        mutationFn: (id: string) => deleteProduct(id),
+        onSuccess: () => {
+            toast.success('Product deleted')
+            queryClient.invalidateQueries({ queryKey: ['products', user?.userId] })
+        },
+        onError: (error: any) => toast.error(error.response?.data?.msg || 'Delete failed')
+    })
+
 
     const handleSubmit = (e: React.FormEvent) => {
         console.log('current user:', user)
