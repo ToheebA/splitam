@@ -3,6 +3,7 @@ import { Toaster } from 'react-hot-toast'
 import { AuthProvider } from './context/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import AdminDashboard from './pages/AdminDashboard'
+import CreateGroup from './pages/CreateGroup'
 import BrowseGroups from './pages/BrowseGroups'
 import BrowseProducts from './pages/BrowseProducts'
 import BuyerDashboard from './pages/BuyerDashboard'
@@ -37,6 +38,11 @@ function App() {
             <ProtectedRoute allowedRoles={['buyer']}>
               <BuyerDashboard />
             </ProtectedRoute>
+          } />
+          <Route path="/groups/create" element={
+              <ProtectedRoute allowedRoles={['buyer']}>
+                  <CreateGroup />
+              </ProtectedRoute>
           } />
           <Route path="/groups/:id" element={
             <ProtectedRoute allowedRoles={['buyer']}>
