@@ -84,3 +84,11 @@ export interface Group {
     createdAt: Date,
     updatedAt: Date
 }
+
+export interface CreateGroupData {
+    productId: string,
+    targetQuantity: number,
+    quantity: number,
+    deadline: string,
+    location: string
+}
