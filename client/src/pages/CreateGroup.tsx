@@ -1,5 +1,5 @@
 import { createGroup } from "../api/groups";
-import type { Group, Product, GroupMember, GroupStatus, CreateGroupData } from "../types/index"
+import type { CreateGroupData } from "../types/index"
 import { useAuth } from "../context/AuthContext" 
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
@@ -27,7 +27,7 @@ const CreateGroup = () => {
         mutationFn: (data: CreateGroupData) => createGroup(data),
         onSuccess: () => {
             toast.success('Group created')
-            queryClient.invalidateQueries({ queryKey: ['groups', user?.userId] })
+            queryClient.invalidateQueries({ queryKey: ['groups', user?._id] })
             navigate('/buyer/dashboard')
         },
         onError: (error: any) => {
@@ -37,7 +37,7 @@ const CreateGroup = () => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
-        if (!user?.userId) {
+        if (!user?._id) {
             toast.error('You must be logged in');
             return;
         }

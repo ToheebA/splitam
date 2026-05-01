@@ -9,14 +9,15 @@ type modifiedProduct = Omit<Product, '_id' | 'vendor' | 'createdAt' | 'updatedAt
 
 const VendorDashboard = () => {
     const { user } = useAuth()
+    console.log('user:', user)
     const queryClient = useQueryClient()
     const [editingProduct, setEditingProduct] = useState<Product | null>(null)
     const [showCreateForm, setShowCreateForm] = useState(false)
 
     const { data, isLoading, isError } = useQuery({
-        queryKey: ['products', user?.userId],
-        queryFn: () => getProducts({ vendor: user?.userId as string }),
-        enabled: !!user?.userId
+        queryKey: ['products', user?._id],
+        queryFn: () => getProducts({ vendor: user?._id as string }),
+        enabled: !!user?._id
     })
 
     const initialFormState = {
@@ -33,10 +34,10 @@ const VendorDashboard = () => {
     const [productForm, setProductForm] = useState<modifiedProduct>(initialFormState)
 
     const { mutate: createProductMutation } = useMutation({
-        mutationFn: (data: modifiedProduct & { vendor: string }) => createProduct(data),
+        mutationFn: createProduct,
         onSuccess: () => {
             toast.success('Product created')
-            queryClient.invalidateQueries({ queryKey: ['products', user?.userId] })
+            queryClient.invalidateQueries({ queryKey: ['products', user?._id] })
             setShowCreateForm(false)
             setProductForm(initialFormState)
         },
@@ -49,7 +50,7 @@ const VendorDashboard = () => {
         mutationFn: ({ id, data }: { id: string, data: Partial<modifiedProduct> }) => updateProduct(id, data),
         onSuccess: () => {
             toast.success('Product updated')
-            queryClient.invalidateQueries({ queryKey: ['products', user?.userId] })
+            queryClient.invalidateQueries({ queryKey: ['products', user?._id] })
             setEditingProduct(null)
         },
         onError: (error: any) =>
@@ -60,7 +61,7 @@ const VendorDashboard = () => {
         mutationFn: (id: string) => deleteProduct(id),
         onSuccess: () => {
             toast.success('Product deleted')
-            queryClient.invalidateQueries({ queryKey: ['products', user?.userId] })
+            queryClient.invalidateQueries({ queryKey: ['products', user?._id] })
         },
         onError: (error: any) => toast.error(error.response?.data?.msg || 'Delete failed')
     })
@@ -68,11 +69,11 @@ const VendorDashboard = () => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
-        if (!user?.userId) {
+        if (!user?._id) {
             toast.error('You must be logged in');
             return;
         }
-        createProductMutation({ ...productForm, vendor: user?.userId })
+        createProductMutation(productForm)
     }
 
     const handleEditSubmit = (e: React.FormEvent) => {
