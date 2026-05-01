@@ -67,7 +67,6 @@ const VendorDashboard = () => {
 
 
     const handleSubmit = (e: React.FormEvent) => {
-        console.log('current user:', user)
         e.preventDefault()
         if (!user?.userId) {
             toast.error('You must be logged in');
