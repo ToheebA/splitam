@@ -26,7 +26,7 @@ export interface ProductFilter {
     available?: boolean
     vendor?: string
     name?: RegExp
-    category?: string
+    category?: string | RegExp
 }
 
 export interface IUser {

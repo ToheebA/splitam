@@ -40,7 +40,7 @@ const getAllProducts = async (req: Request, res: Response) => {
     }
 
     if (category) {
-        filter.category = category as string
+        filter.category = new RegExp(category as string, 'i')
     }
 
     const products = await Product.find(filter)
