@@ -27,7 +27,7 @@ const createProduct = async (req: AuthRequest, res: Response) => {
 }
 
 const getAllProducts = async (req: Request, res: Response) => {
-    const { vendor, search } = req.query
+    const { vendor, search, category } = req.query
 
     const filter: Record<string, unknown> = { available: true }
 
@@ -37,6 +37,10 @@ const getAllProducts = async (req: Request, res: Response) => {
 
     if (search) {
         filter.name = new RegExp(search as string, 'i')
+    }
+
+    if (category) {
+        filter.category = category as string
     }
 
     const products = await Product.find(filter)
