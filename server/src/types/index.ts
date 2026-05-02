@@ -22,6 +22,13 @@ export interface GroupFilter {
     'members.user'?:string
 }
 
+export interface ProductFilter {
+    available?: boolean
+    vendor?: string
+    name?: RegExp
+    category?: string
+}
+
 export interface IUser {
     _id: Types.ObjectId,
     name: string,
