@@ -27,7 +27,7 @@ const CreateGroup = () => {
         mutationFn: (data: CreateGroupData) => createGroup(data),
         onSuccess: () => {
             toast.success('Group created')
-            queryClient.invalidateQueries({ queryKey: ['groups', user?._id] })
+            queryClient.invalidateQueries({ queryKey: ['myGroups', user?._id] })
             navigate('/buyer/dashboard')
         },
         onError: (error: any) => {
