@@ -1,4 +1,4 @@
-import { AuthRequest } from "../types/index";
+import { AuthRequest, ProductFilter } from "../types/index";
 import { Request, Response } from "express";
 import { BadRequestError, UnauthenticatedError, NotFoundError, ForbiddenError } from "../errors/index";
 import Product from "../models/Product";
@@ -29,10 +29,10 @@ const createProduct = async (req: AuthRequest, res: Response) => {
 const getAllProducts = async (req: Request, res: Response) => {
     const { vendor, search, category } = req.query
 
-    const filter: Record<string, unknown> = { available: true }
+    const filter: ProductFilter = { available: true }
 
     if (vendor) {
-        filter.vendor = vendor
+        filter.vendor = vendor as string
     }
 
     if (search) {
