@@ -1,5 +1,5 @@
 import { createGroup } from "../api/groups";
-import type { CreateGroupData } from "../types/index"
+import type { CreateGroupData } from "../types"
 import { useAuth } from "../context/AuthContext" 
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"

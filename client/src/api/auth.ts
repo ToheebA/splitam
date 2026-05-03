@@ -1,5 +1,5 @@
 import API from "./axios";
-import type { RegisterData, LoginData } from "../types/index";
+import type { RegisterData, LoginData } from "../types";
 
 export const registerUser = (userData: RegisterData) => 
     API.post('/auth/register', userData);

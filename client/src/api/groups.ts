@@ -1,5 +1,5 @@
 import API from "./axios";
-import type { CreateGroupData } from "../types/index";
+import type { CreateGroupData } from "../types";
 
 export const getGroups = (params?: Record<string, string>) =>
     API.get('/groups', { params })

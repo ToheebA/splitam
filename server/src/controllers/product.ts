@@ -1,4 +1,4 @@
-import { AuthRequest, ProductFilter } from "../types/index";
+import { AuthRequest, ProductFilter } from "../types";
 import { Request, Response } from "express";
 import { BadRequestError, UnauthenticatedError, NotFoundError, ForbiddenError } from "../errors/index";
 import Product from "../models/Product";

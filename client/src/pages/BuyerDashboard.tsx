@@ -1,5 +1,5 @@
 import { getGroups, updateGroup } from "../api/groups"
-import type { User, Group, Product, CreateGroupData } from "../types/index"
+import type { User, Group, Product, CreateGroupData } from "../types"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
 import { Link } from "react-router-dom"

@@ -1,5 +1,5 @@
 import { getProducts, createProduct, updateProduct, deleteProduct } from "../api/products"
-import type { Product } from "../types/index"
+import type { Product } from "../types"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
 import { useAuth } from "../context/AuthContext" 

@@ -1,5 +1,5 @@
 import API from "./axios";
-import type { Product } from "../types/index";
+import type { Product } from "../types";
 
 export const getProducts = (params?: Record<string, string>) => 
     API.get('/products', { params })
