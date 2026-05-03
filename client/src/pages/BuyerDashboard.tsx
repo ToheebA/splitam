@@ -31,7 +31,8 @@ const BuyerDashboard = () => {
         mutationFn: ({ id, data }: { id: string, data: Partial<Omit<CreateGroupData, 'quantity'>> }) => updateGroup(id, data),
         onSuccess: () => {
             toast.success('Group updated')
-            queryClient.invalidateQueries({ queryKey: ['groups', user?._id] })
+            queryClient.invalidateQueries({ queryKey: ['groups'] })
+            queryClient.invalidateQueries({ queryKey: ['myGroups'] })
             setEditingGroup(null)
         },
         onError: (error: any) =>
@@ -90,7 +91,17 @@ const BuyerDashboard = () => {
                                 </span>
                             </div>
                             <p className="text-sm text-gray-500 mb-3">{product.description}</p>
-                            <p className="text-sm text-gray-500 mb-4">₦{product.unitPrice} / {product.unit} · Min {product.minQuantity}</p>
+                            <p className="text-sm text-gray-500 mb-4">₦{product.unitPrice} / {product.unit} per unit</p>
+                            <p className="text-xs text-gray-500 mb-1">
+                                {group.currentQuantity} / {group.targetQuantity} units filled
+                            </p>
+                            <div className="w-full bg-gray-100 rounded-full h-2 mb-3">
+                                <div 
+                                    className="bg-green-600 h-2 rounded-full transition-all"
+                                    style={{ width: `${(group.currentQuantity / group.targetQuantity) * 100}%` }}
+                                />
+                            </div>
+                            <p className="text-sm text-gray-500 mb-4">Min of {product.minQuantity} units</p>
                             <div className="flex gap-2 border-t border-gray-100 pt-3">
                                 {creatorId === user?._id && (
                                     <button
