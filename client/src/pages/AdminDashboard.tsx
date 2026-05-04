@@ -1,6 +1,6 @@
 const AdminDashboard = () => {
     return (
-        <div>AdminDashboard</div>
+        <div>This is the AdminDashboard</div>
     )
 }
 
