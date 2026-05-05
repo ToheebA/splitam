@@ -1,7 +1,7 @@
 const GroupDetail = () => {
     return (
         <div>
-            GroupDetail
+            This is GroupDetail page
         </div>
     )
 }
