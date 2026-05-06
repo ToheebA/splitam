@@ -15,8 +15,8 @@ const CreateGroup = () => {
     
     const initialFormState = {
         productId,
-        targetQuantity: 0,
-        quantity: 0,
+        targetQuantity: undefined,
+        quantity: undefined,
         deadline: '',
         location: ''
     }
@@ -41,7 +41,15 @@ const CreateGroup = () => {
             toast.error('You must be logged in');
             return;
         }
-        createGroupMutation({ ...groupForm })
+        if (!groupForm.quantity || !groupForm.targetQuantity) {
+            toast.error('Please fill in all the fields')
+            return
+        }
+        createGroupMutation({ 
+            ...groupForm,
+            targetQuantity: groupForm.targetQuantity,
+            quantity: groupForm.quantity 
+        })
     }
 
     return (
@@ -63,8 +71,9 @@ const CreateGroup = () => {
                         <input 
                             type='number'
                             className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-                            value={groupForm.targetQuantity}
-                            onChange={(e) => setGroupForm(prev => ({ ...prev, targetQuantity: Number(e.target.value) }))}
+                            placeholder="Target quantity"
+                            value={groupForm.targetQuantity ?? ''}
+                            onChange={(e) => setGroupForm(prev => ({ ...prev, targetQuantity: e.target.value ? Number(e.target.value) : undefined }))}
                         />
                     </div>
                     <div className="flex flex-col gap-1">
@@ -72,8 +81,9 @@ const CreateGroup = () => {
                         <input 
                             type='number'
                             className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-                            value={groupForm.quantity}
-                            onChange={(e) => setGroupForm(prev => ({ ...prev, quantity: Number(e.target.value) }))}
+                            placeholder='Your quantity'
+                            value={groupForm.quantity ?? ''}
+                            onChange={(e) => setGroupForm(prev => ({ ...prev, quantity: e.target.value ? Number(e.target.value) : undefined }))}
                         />
                     </div>
                     <div className="flex flex-col gap-1">
