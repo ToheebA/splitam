@@ -87,8 +87,19 @@ export interface Group {
 
 export interface CreateGroupData {
     productId: string,
-    targetQuantity: number,
-    quantity: number,
+    targetQuantity: number | undefined,
+    quantity: number | undefined,
     deadline: string,
     location: string
+}
+
+export type ProductFormState = {
+    name: string
+    description: string
+    category: string
+    unitPrice: number | undefined
+    minQuantity: number | undefined
+    unit: string
+    image: string
+    available: boolean
 }

@@ -1,5 +1,5 @@
 import { getProducts, createProduct, updateProduct, deleteProduct } from "../api/products"
-import type { Product } from "../types"
+import type { Product, ProductFormState } from "../types"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
 import { useAuth } from "../context/AuthContext" 
@@ -24,14 +24,14 @@ const VendorDashboard = () => {
         name: '',
         description: '',
         category: '',
-        unitPrice: 0,
-        minQuantity: 0,
+        unitPrice: undefined,
+        minQuantity: undefined,
         unit: '',
         image: '',
         available: true
     }
 
-    const [productForm, setProductForm] = useState<modifiedProduct>(initialFormState)
+    const [productForm, setProductForm] = useState<ProductFormState>(initialFormState)
 
     const { mutate: createProductMutation } = useMutation({
         mutationFn: createProduct,
@@ -73,13 +73,32 @@ const VendorDashboard = () => {
             toast.error('You must be logged in');
             return;
         }
-        createProductMutation(productForm)
+        if (!productForm.unitPrice || !productForm.minQuantity) {
+            toast.error('Please fill in all required fields')
+            return
+        }
+        createProductMutation({
+            ...productForm,
+            unitPrice: productForm.unitPrice,
+            minQuantity: productForm.minQuantity
+        })
     }
 
     const handleEditSubmit = (e: React.FormEvent) => {
         e.preventDefault()
         if (!editingProduct) return
-        updateProductMutation({ id: editingProduct._id, data: productForm })
+        if (!productForm.unitPrice || !productForm.minQuantity) {
+            toast.error('Please fill in all required fields')
+            return
+        }
+        updateProductMutation({ 
+            id: editingProduct._id, 
+            data: {
+                ...productForm,
+                unitPrice: productForm.unitPrice,
+                minQuantity: productForm.minQuantity
+            } 
+        })
     }
 
     if (isLoading) return <div>Loading...</div>
@@ -180,8 +199,9 @@ const VendorDashboard = () => {
                             <input 
                                 type='number'
                                 className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-                                value={productForm.unitPrice}
-                                onChange={(e) => setProductForm(prev => ({ ...prev, unitPrice: Number(e.target.value) }))}
+                                placeholder="Unit Price"
+                                value={productForm.unitPrice ?? ''}
+                                onChange={(e) => setProductForm(prev => ({ ...prev, unitPrice: e.target.value ? Number(e.target.value) : undefined }))}
                             />
                         </div>
                         <div className="flex flex-col gap-1">
@@ -189,8 +209,9 @@ const VendorDashboard = () => {
                             <input 
                                 type='number'
                                 className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-                                value={productForm.minQuantity}
-                                onChange={(e) => setProductForm(prev => ({ ...prev, minQuantity: Number(e.target.value) }))}
+                                placeholder="Min Qty"
+                                value={productForm.minQuantity ?? ''}
+                                onChange={(e) => setProductForm(prev => ({ ...prev, minQuantity: e.target.value ? Number(e.target.value) : undefined }))}
                             />
                         </div>
                         <div className="flex flex-col gap-1">
@@ -274,8 +295,9 @@ const VendorDashboard = () => {
                             <input 
                                 type='number'
                                 className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-                                value={productForm.unitPrice}
-                                onChange={(e) => setProductForm(prev => ({ ...prev, unitPrice: Number(e.target.value) }))}
+                                placeholder="Unit Price"
+                                value={productForm.unitPrice ?? ''}
+                                onChange={(e) => setProductForm(prev => ({ ...prev, unitPrice: e.target.value ? Number(e.target.value) : undefined }))}
                             />
                         </div>
                         <div className="flex flex-col gap-1">
@@ -283,8 +305,9 @@ const VendorDashboard = () => {
                             <input 
                                 type='number'
                                 className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-                                value={productForm.minQuantity}
-                                onChange={(e) => setProductForm(prev => ({ ...prev, minQuantity: Number(e.target.value) }))}
+                                placeholder="Min Qty"
+                                value={productForm.minQuantity ?? ''}
+                                onChange={(e) => setProductForm(prev => ({ ...prev, minQuantity: e.target.value ? Number(e.target.value) : undefined }))}
                             />
                         </div>
                         <div className="flex flex-col gap-1">

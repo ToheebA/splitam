@@ -91,7 +91,7 @@ const BuyerDashboard = () => {
                                 </span>
                             </div>
                             <p className="text-sm text-gray-500 mb-3">{product.description}</p>
-                            <p className="text-sm text-gray-500 mb-4">₦{product.unitPrice} / {product.unit} per unit</p>
+                            <p className="text-sm text-gray-500 mb-4">₦{product.unitPrice} per unit</p>
                             <p className="text-xs text-gray-500 mb-1">
                                 {group.currentQuantity} / {group.targetQuantity} units filled
                             </p>
