@@ -12,7 +12,7 @@ const BrowseGroups = () => {
     const [location, setLocation] = useState('')
     const [status, setStatus] = useState('')
     const [joiningGroupId, setJoiningGroupId] = useState<string | null>(null)
-    const [joinQuantity, setJoinQuantity] = useState(1)
+    const [joinQuantity, setJoinQuantity] = useState<number | undefined>(undefined)
     const debouncedSearch = useDebounce(location)
     const queryClient = useQueryClient()
 
@@ -30,7 +30,7 @@ const BrowseGroups = () => {
             toast.success('You have successfully joined the group')
             queryClient.invalidateQueries({ queryKey: ['groups'] })
             setJoiningGroupId(null)
-            setJoinQuantity(1)
+            setJoinQuantity(undefined)
         },
         onError: (error: any) =>
             toast.error(error.response?.data?.msg || 'Group joining failed')
@@ -97,12 +97,14 @@ const BrowseGroups = () => {
                                     <input
                                         type="number"
                                         min={1}
-                                        value={joinQuantity}
-                                        onChange={(e) => setJoinQuantity(Number(e.target.value))}
+                                        value={joinQuantity ?? ''}
+                                        onChange={(e) => setJoinQuantity(e.target.value ? Number(e.target.value) : undefined)}
+                                        placeholder="Qty"
                                         className="w-20 border border-gray-200 rounded-lg px-2 py-1 text-sm"
                                     />
                                     <button 
-                                        onClick={() => joinGroupMutation({ id: group._id, quantity: joinQuantity })}
+                                        onClick={() => joinQuantity && joinGroupMutation({ id: group._id, quantity: joinQuantity })}
+                                        disabled={!joinQuantity}
                                         className="flex-1 bg-green-700 text-white py-1.5 rounded-lg text-sm hover:bg-green-800 transition-colors cursor-pointer"
                                     >
                                         Confirm
