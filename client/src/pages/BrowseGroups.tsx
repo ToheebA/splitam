@@ -91,6 +91,12 @@ const BrowseGroups = () => {
                                 </div>
                                 <p className="font-medium text-gray-900">Deadline: {new Date(group.deadline).toLocaleDateString()}</p>
                                 <p className="font-medium text-gray-900">₦{group.pricePerUnit} per unit</p>
+                                <Link 
+                                    to={`/groups/${group._id}`}
+                                    className="text-sm text-green-700 hover:underline"
+                                >
+                                    View Details
+                                </Link>
                             </div>
                             {joiningGroupId === group._id ? (
                                 <div className="flex gap-2 mt-3">
