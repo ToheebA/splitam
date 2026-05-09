@@ -101,6 +101,12 @@ const BuyerDashboard = () => {
                                     style={{ width: `${(group.currentQuantity / group.targetQuantity) * 100}%` }}
                                 />
                             </div>
+                            <Link 
+                                to={`/groups/${group._id}`}
+                                className="text-sm text-green-700 hover:underline"
+                            >
+                                View Details
+                            </Link>
                             <p className="text-sm text-gray-500 mb-4">Min of {product.minQuantity} units</p>
                             <div className="flex gap-2 border-t border-gray-100 pt-3">
                                 {creatorId === user?._id && (
