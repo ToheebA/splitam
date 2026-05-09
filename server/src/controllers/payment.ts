@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { AuthRequest, IUser } from '../types';
 import { UnauthenticatedError, NotFoundError, BadRequestError } from '../errors';
 import Group from '../models/Group';
+import User from '../models/User'
 import Product from '../models/Product';
 import axios from 'axios';
 import { StatusCodes } from 'http-status-codes';
@@ -21,7 +22,6 @@ const initializePayment = async (req: AuthRequest, res: Response) => {
     const userId = req.user.userId;
 
     const group = await Group.findById(id)
-        .populate('members.user', 'email');
     if (!group) {
         throw new NotFoundError('Group not found');
     }
@@ -38,7 +38,11 @@ const initializePayment = async (req: AuthRequest, res: Response) => {
         throw new BadRequestError('You have already paid for this group');
     }
 
-    const email = (member.user as unknown as IUser).email;
+    const memberUser = await User.findById(member.user).select('email')
+    if (!memberUser) {
+        throw new BadRequestError('Unable to find user')
+    }
+    const email = memberUser.email
 
     const amount = member.quantity * group.pricePerUnit;
 

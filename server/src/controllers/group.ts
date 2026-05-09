@@ -239,6 +239,10 @@ const updateGroup = async (req: AuthRequest, res: Response) => {
     if (location !== undefined) group.location = location;
     if (status !== undefined) group.status = status;
 
+    if (group.currentQuantity >= group.targetQuantity) {
+        group.status = 'filled'
+    }
+
     await group.save();
     res.status(StatusCodes.OK).json({ group })
 }
