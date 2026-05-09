@@ -7,6 +7,7 @@ import CreateGroup from './pages/CreateGroup'
 import BrowseGroups from './pages/BrowseGroups'
 import BrowseProducts from './pages/BrowseProducts'
 import BuyerDashboard from './pages/BuyerDashboard'
+import PaymentSuccess from './pages/PaymentSuccess'
 import GroupDetail from './pages/GroupDetail'
 import Landing from './pages/Landing'
 import Login from './pages/Login'
@@ -37,6 +38,11 @@ function App() {
           <Route path="/buyer/dashboard" element={
             <ProtectedRoute allowedRoles={['buyer']}>
               <BuyerDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/payment/success" element={
+            <ProtectedRoute allowedRoles={['buyer']}>
+                <PaymentSuccess />
             </ProtectedRoute>
           } />
           <Route path="/groups/create" element={

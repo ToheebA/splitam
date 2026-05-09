@@ -58,7 +58,8 @@ const initializePayment = async (req: AuthRequest, res: Response) => {
             metadata: {
                 groupId: id,
                 userId: userId
-            }
+            },
+            callback_url: process.env.PAYSTACK_CALLBACK_URL
         },
         {
             headers: {
