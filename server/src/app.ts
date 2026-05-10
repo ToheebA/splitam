@@ -10,6 +10,7 @@ import authRouter from './routes/auth';
 import productRouter from './routes/product';
 import groupRouter from './routes/group';
 import paymentRouter from './routes/payment';
+import userRouter from './routes/user';
 
 const app = express();
 const server = createServer(app);
@@ -29,6 +30,7 @@ app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/products', productRouter);
 app.use('/api/v1/groups', groupRouter);
 app.use('/api/v1/payments', paymentRouter);
+app.use('/api/v1/users', userRouter);
 app.get('/', (_req, res) => {
     res.json({ msg: 'SplitAm API' })
 })

@@ -29,6 +29,10 @@ export interface ProductFilter {
     category?: string | RegExp
 }
 
+export interface UserFilter {
+    role?: Role
+}
+
 export interface IUser {
     _id: Types.ObjectId,
     name: string,
