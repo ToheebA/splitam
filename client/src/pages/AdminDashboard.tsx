@@ -1,6 +1,8 @@
 const AdminDashboard = () => {
     return (
-        <div>This is the AdminDashboard</div>
+        <div>
+            <button>This is the AdminDashboard</button>
+        </div>
     )
 }
 
