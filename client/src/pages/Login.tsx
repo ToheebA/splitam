@@ -24,6 +24,7 @@ const Login = () => {
             login(response.data.token, response.data.user)
             if (response.data.user.role === 'buyer') navigate('/buyer/dashboard')
             if (response.data.user.role === 'vendor') navigate('/vendor/dashboard')
+            if (response.data.user.role === 'admin') navigate('/admin/dashboard')
             toast.success('Login successful!')
         },
         onError: (error: any) => {

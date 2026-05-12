@@ -239,7 +239,9 @@ const updateGroup = async (req: AuthRequest, res: Response) => {
     if (location !== undefined) group.location = location;
     if (status !== undefined) group.status = status;
 
-    if (group.currentQuantity >= group.targetQuantity) {
+    if (status !== undefined) {
+        group.status = status
+    } else if (group.currentQuantity >= group.targetQuantity) {
         group.status = 'filled'
     }
 
