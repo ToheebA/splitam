@@ -1,4 +1,4 @@
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate, Link, useLocation } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
 import { registerUser } from '../api/auth'
@@ -9,6 +9,8 @@ const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d])[A-Za-z\d\W]{8,}$/
 
 const Register = () => {
+    const location = useLocation()
+    const { role } = location.state || {}
     const navigate = useNavigate()
     const [error, setError] = useState('')
     const [showPassword, setShowPassword] = useState(false)
@@ -18,7 +20,7 @@ const Register = () => {
         email: '',
         password: '',
         confirmPassword:'',
-        role: 'buyer',
+        role: role || 'buyer',
         location: ''
     })
     const { mutate, isPending } = useMutation({
