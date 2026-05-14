@@ -1,3 +1,5 @@
+import { Socket } from 'socket.io-client';
+
 export type Role = 'buyer' | 'vendor' | 'admin';
 
 export type GroupStatus = 'open' | 'filled' | 'purchased' | 'delivered' | 'cancelled';
@@ -102,4 +104,8 @@ export type ProductFormState = {
     unit: string
     image: string
     available: boolean
+}
+
+export interface SocketContextType {
+    socket: Socket | null
 }
