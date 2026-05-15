@@ -15,12 +15,14 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import VerifyEmail from './pages/VerifyEmail'
 import VendorDashboard from './pages/VendorDashboard'
+import Navbar from './components/Navbar'
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <SocketProvider>
+          <Navbar />
           <Toaster position="top-right" />
           <Routes>
             <Route path="/" element={<Landing />} />
