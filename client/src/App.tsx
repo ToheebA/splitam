@@ -16,6 +16,7 @@ import Register from './pages/Register'
 import VerifyEmail from './pages/VerifyEmail'
 import VendorDashboard from './pages/VendorDashboard'
 import Navbar from './components/Navbar'
+import Footer from './components/Footer'
 
 function App() {
   return (
@@ -70,6 +71,7 @@ function App() {
               </ProtectedRoute>
             } />
           </Routes>
+          <Footer />
         </SocketProvider>
       </AuthProvider>
     </BrowserRouter>
