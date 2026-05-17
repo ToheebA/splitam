@@ -5,6 +5,7 @@ import { useState } from "react"
 import { Link } from "react-router-dom"
 import { useAuth } from "../context/AuthContext" 
 import toast from 'react-hot-toast'
+import Spinner from "../components/Spinner"
 
 const BuyerDashboard = () => {
     const { user } = useAuth()
@@ -45,7 +46,7 @@ const BuyerDashboard = () => {
         updateGroupMutation({ id: editingGroup._id, data: groupForm })
     }
 
-    if (isLoading) return <div>Loading...</div>
+    if (isLoading) return <Spinner />
     if (isError) return <div>Something went wrong</div>
 
     return (

@@ -5,6 +5,7 @@ import type { User, Group, Product } from '../types'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '../context/AuthContext'
 import toast from 'react-hot-toast'
+import Spinner from '../components/Spinner'
 
 const AdminDashboard = () => {
     const { user } = useAuth()
@@ -58,7 +59,7 @@ const AdminDashboard = () => {
         onError: (error: any) => toast.error(error.response?.data?.msg || 'Update failed')
     })
 
-    if (isLoading) return <p>Loading...</p>
+    if (isLoading) return <Spinner />
     if (isError) return <p>Error loading stats</p>
 
     return (

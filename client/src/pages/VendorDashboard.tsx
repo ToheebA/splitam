@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
 import { useAuth } from "../context/AuthContext" 
 import toast from 'react-hot-toast'
+import Spinner from "../components/Spinner"
 
 type modifiedProduct = Omit<Product, '_id' | 'vendor' | 'createdAt' | 'updatedAt'>
 
@@ -101,7 +102,7 @@ const VendorDashboard = () => {
         })
     }
 
-    if (isLoading) return <div>Loading...</div>
+    if (isLoading) return <Spinner />
     if (isError) return <div>Something went wrong</div>
 
     return (

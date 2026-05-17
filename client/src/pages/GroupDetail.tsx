@@ -6,6 +6,7 @@ import { useState } from "react"
 import { useParams } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 import toast from "react-hot-toast"
+import Spinner from "../components/Spinner"
 
 const GroupDetail = () => {
     const { user } = useAuth()
@@ -57,7 +58,7 @@ const GroupDetail = () => {
         updateGroupMutation({ id: editingGroup._id, data: groupForm })
     }
 
-    if (isLoading) return <div>Loading...</div>
+    if (isLoading) return <Spinner />
     if (isError) return <div>Something went wrong</div>
 
     const group = data?.data?.group as Group
